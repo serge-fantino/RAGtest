@@ -4,7 +4,7 @@ by Serge Fantino
 
 ## Overview
 This project is an experimental implementation of a Retrieval-Augmented Generation (RAG) system designed to work with highly personal documents. The goal is to create an AI assistant that can effectively understand and answer questions about personal content, such as daily journals, notes, or personal records.
-This is also an experiment at augmented IDEA to learn how to better use Cursor and Claude.
+This is also an experiment at augmented IDEA to learn how to better use Cursor and Claude - so you can expect most of the code and documentaiton to have been generated / augmented.
 
 ## Purpose
 - Test the effectiveness of RAG systems with personal, contextual content
