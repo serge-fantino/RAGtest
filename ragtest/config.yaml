@@ -1,0 +1,39 @@
+llm:
+  model_name: "dolphin-2.8-mistral-7b-v02-GGUF/dolphin-2.8-mistral-7b-v02-Q4_0.gguf"
+  model_kwargs:
+    n_ctx: 8192
+    n_threads: 14
+    n_batch: 512
+    protected_namespaces: []
+    n_gpu_layers: -1
+    use_metal: true
+    main_gpu: 0
+  temperature: 0.1
+  max_new_tokens: 1024
+  context_window: 8192
+  generate_kwargs:
+    top_p: 0.1
+    top_k: 30
+  verbose: true
+
+embedding:
+  model_name: "BAAI/bge-small-en-v1.5"
+
+query_engine:
+  similarity_top_k: 5
+  similarity_threshold: 0.9
+  response_mode: "tree_summarize"
+  structured_answer_filtering: true
+  verbose: true
+  template: |
+    Tu es un assistant précis et factuel. Utilise uniquement les informations du CONTEXTE ci-dessous pour répondre à la QUESTION.
+    Si tu ne trouves pas l'information dans le contexte, dis-le clairement.
+    Ne fais pas de suppositions et reste objectif.
+
+    CONTEXTE:
+    {context_str}
+
+    QUESTION:
+    {query_str}
+
+    RÉPONSE FACTUELLE:

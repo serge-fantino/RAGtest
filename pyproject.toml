@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "ragtest"
+version = "0.1.0"
+description = ""
+authors = ["serge fantino <serge.fantino@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.10"
+llama-index = "^0.12.3"
+llama-index-vector-stores-chroma = "0.4.0"
+chromadb = "0.5.17"
+transformers = "^4.47.0"
+sentence-transformers = "^3.3.1"
+llama-index-llms-llama-cpp = "^0.3.0"
+llama-index-embeddings-huggingface = "^0.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
