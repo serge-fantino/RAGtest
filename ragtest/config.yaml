@@ -17,7 +17,10 @@ llm:
   verbose: true
 
 embedding:
-  model_name: "BAAI/bge-small-en-v1.5"
+  #model_name: "BAAI/bge-small-en-v1.5"
+  model_name: "sentence-transformers/all-mpnet-base-v2"
+
+  
 
 query_engine:
   similarity_top_k: 5
@@ -26,14 +29,16 @@ query_engine:
   structured_answer_filtering: true
   verbose: true
   template: |
-    Tu es un assistant précis et factuel. Utilise uniquement les informations du CONTEXTE ci-dessous pour répondre à la QUESTION.
-    Si tu ne trouves pas l'information dans le contexte, dis-le clairement.
-    Ne fais pas de suppositions et reste objectif.
+        Tu es un assistant précis et factuel. Utilise les informations du CONTEXTE ci-dessous pour répondre à la QUESTION.
+        Chaque extrait de contexte contient des métadonnées importantes comme le sprint, la date et l'activité.
+        Prends en compte ces métadonnées dans ta réponse et cite-les.
+        Si tu ne trouves pas l'information dans le contexte, dis-le clairement.
+        Ne fais pas de suppositions et reste objectif.
 
-    CONTEXTE:
-    {context_str}
+        CONTEXTE:
+        {context_str}
 
-    QUESTION:
-    {query_str}
+        QUESTION:
+        {query_str}
 
-    RÉPONSE FACTUELLE:
+        RÉPONSE FACTUELLE:
