@@ -4,8 +4,8 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import argparse
 import yaml
 import os
-from index_builder import load_or_create_index
-from query_engine import create_query_engine
+from ragtest.index_builder import load_or_create_index
+from ragtest.query_engine import create_query_engine
 
 def load_config(config_path):
     with open(config_path, 'r') as f:
@@ -93,7 +93,7 @@ def main():
     embed_model = init_embedding_model(config)
 
     # Chargement ou création de l'index
-    index = load_or_create_index(args.doc_path, llm, embed_model, args.force_rebuild)
+    index = load_or_create_index(args.doc_path, llm, embed_model, config, args.force_rebuild)
     
     # Création du moteur de requête et lancement de la boucle
     query_engine = create_query_engine(index, llm, config)

@@ -194,4 +194,19 @@ I will push this work in a working branch, because this is clearly not good at a
 - I am not even convinced that tehre is a way to do better : I am just questionning the quality of my data sample, maybe it is too fuzy for this application.
 - I should consider using a different use case with more coherent data
 
+### 2024-12-08
 
+#### What?
+
+- ok I finaly found a way to make the filtering by metadata to work with Chroma, by using the native search database capabilities
+- however this is not the good direction... we end up using classical index based search, not leveraging the LLM anymore.
+- need to find another way:
+  - better data processing to go beyond text manipulation, but also to extract real information ?
+  - connect the pieces of information like with hyperlinks ? or graph ?
+- looks like there are several RAG2.0 approach like this ! see next steps
+
+#### Next Steps ?
+
+- I started to read about Knowledge Graphs and how to use them with RAG
+- I found some interesting ressources that I will try to use to build a more sophistocated RAG system
+- See [KnowledgeGraphRAG.md](KnowledgeGraphRAG.md) for more details

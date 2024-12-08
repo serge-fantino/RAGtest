@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["serge fantino <serge.fantino@gmail.com>"]
 readme = "README.md"
+packages = [{include = "ragtest"}]
 
 [tool.poetry.dependencies]
 python = "3.11.10"
@@ -14,6 +15,9 @@ transformers = "^4.47.0"
 sentence-transformers = "^3.3.1"
 llama-index-llms-llama-cpp = "^0.3.0"
 llama-index-embeddings-huggingface = "^0.4.0"
+
+[tool.poetry.scripts]
+query-docs = "ragtest.queryDocs:main"
 
 [build-system]
 requires = ["poetry-core"]

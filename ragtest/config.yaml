@@ -20,7 +20,9 @@ embedding:
   #model_name: "BAAI/bge-small-en-v1.5"
   model_name: "sentence-transformers/all-mpnet-base-v2"
 
-  
+indexing:
+  required_metadata:
+    - sprint
 
 query_engine:
   similarity_top_k: 5

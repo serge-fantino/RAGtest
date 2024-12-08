@@ -1,7 +1,10 @@
 import re
 from typing import Any
 from llama_index.core import VectorStoreIndex
-from query_preprocessor import QueryPreprocessor
+from llama_index.core.schema import NodeWithScore
+from llama_index.core.base.base_query_engine import BaseQueryEngine
+from llama_index.core.indices.query.schema import QueryBundle
+from ragtest.query_preprocessor import QueryPreprocessor
 
 class HybridPostprocessor:
     """Combine recherche sémantique et par mots-clés."""
@@ -75,58 +78,51 @@ class HybridPostprocessor:
 
 class MetadataAwareQueryEngine:
     """Moteur de requête qui prend en compte les métadonnées."""
-    def __init__(self, base_engine, preprocessor):
-        self.base_engine = base_engine
+    def __init__(self, index, llm, config, preprocessor):
+        self.index = index  # On garde une référence à l'index
+        self.llm = llm
+        self.config = config
         self.preprocessor = preprocessor
     
     def query(self, query_str: str) -> Any:
-        # Prétraiter la requête
         query_metadata = self.preprocessor.preprocess_query(query_str)
         print("\nAnalyse de la requête:")
         print(f"- Sprint: {query_metadata.sprint}")
         print(f"- Date: {query_metadata.date}")
         print(f"- Activité: {query_metadata.activity}")
         print(f"- Contexte: {query_metadata.context}")
-        print(f"\nRequête enrichie: {query_metadata.enriched_query}")
         
-        # Au lieu d'utiliser metadata_filters, nous utilisons déjà HybridPostprocessor
-        # qui gère le filtrage des métadonnées
-        response = self.base_engine.query(query_metadata.enriched_query)
-        return response
+        # Construire le filtre Chroma
+        where_filter = {}
+        if query_metadata.sprint:
+            where_filter["sprint"] = str(query_metadata.sprint)
+        if query_metadata.activity:
+            where_filter["activity"] = query_metadata.activity
+        if query_metadata.date:
+            where_filter["date"] = query_metadata.date
+
+        # Créer un nouveau query engine avec les filtres Chroma
+        query_config = self.config.get('query_engine', {})
+        if where_filter:
+            print(f"\nFiltres Chroma appliqués: {where_filter}")
+            engine = self.index.as_query_engine(
+                llm=self.llm,
+                similarity_top_k=query_config.get('similarity_top_k', 10),
+                node_postprocessors=[HybridPostprocessor()],
+                vector_store_kwargs={
+                    "where": where_filter
+                }
+            )
+        else:
+            engine = self.index.as_query_engine(
+                llm=self.llm,
+                similarity_top_k=query_config.get('similarity_top_k', 10),
+                node_postprocessors=[HybridPostprocessor()]
+            )
+        
+        return engine.query(query_metadata.enriched_query)
 
 def create_query_engine(index: VectorStoreIndex, llm: Any, config: dict) -> MetadataAwareQueryEngine:
-    """
-    Crée un moteur de requête optimisé pour utiliser les métadonnées.
-    """
-    query_config = config['query_engine']
+    """Crée un moteur de requête optimisé pour utiliser les métadonnées."""
     preprocessor = QueryPreprocessor(llm)
-    
-    # Template pour les réponses
-    custom_template = """
-    Tu es un assistant précis et factuel. Utilise les informations du CONTEXTE ci-dessous pour répondre à la QUESTION.
-    Chaque extrait de contexte contient des métadonnées importantes comme le sprint, la date et l'activité.
-    Prends en compte ces métadonnées dans ta réponse et cite-les.
-    Si tu ne trouves pas l'information dans le contexte, dis-le clairement.
-    Ne fais pas de suppositions et reste objectif.
-
-    CONTEXTE:
-    {context_str}
-
-    QUESTION:
-    {query_str}
-
-    RÉPONSE FACTUELLE:
-    """
-    
-    # Créer le moteur de base
-    base_engine = index.as_query_engine(
-        llm=llm,
-        similarity_top_k=query_config.get('similarity_top_k', 10),
-        node_postprocessors=[HybridPostprocessor()],
-        response_mode=query_config.get('response_mode', "tree_summarize"),
-        text_qa_template=custom_template,
-        verbose=True
-    )
-    
-    # Wrapper avec notre moteur personnalisé
-    return MetadataAwareQueryEngine(base_engine, preprocessor) 
+    return MetadataAwareQueryEngine(index, llm, config, preprocessor) 
