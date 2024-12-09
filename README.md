@@ -171,11 +171,44 @@ So for now it is a complete failure :)
 
 #### What?
 
-- refactoring du code initial pour structurer les parties et permettre de le lancer sur un répertoire de doc / gestion automatique de la création de la base d'embeddings
-- isolation de la configuration des modèles et query engine dans un fichier de configuration
+- refactoring of initial code to structure components and allow running on a document directory / automatic management of embeddings database creation
+- isolation of model configuration and query engine settings in a configuration file
 
-Prêt pour partager sur Github!
+Ready to share on Github!
 
-AUssi test rapide avec un autre modèle: Mistral-Nemo-Instruct-2407-Q4_K_M.gguf
-- les résultats sont encore pire et beaucoup plus lent (logique)
-- trouver un modèle 4bits plus récent ?
+Also quick test with another model: Mistral-Nemo-Instruct-2407-Q4_K_M.gguf
+- results are even worse and much slower (makes sense)
+- find a more recent 4-bit model?
+
+#### Also later on Saturday:
+
+- I tried to implement a new indexing strategy that leverages the structured hierarchy of the documents (sprint, date, activity), in order to enrich the chunks with metadata
+- And I was expecting this to allow better retrieval of relevant documents, based on the query...
+- But to be honnest this is not working at all...
+- There are hardly no correlation between the qeury referencing key elements (e.g. date, sprint number...) and teh retrieval of the source documents
+- Thus the reply are completely out of scope / context.
+- I also tried to use the LLM to first preprocess the user query in order to clearly identify the metadata, and use that to enforce the search in the vector database... but the results are quite unpredictable - I see a lot of hallucination and the results are not better even after adding strong rules in prompt to avoid it.
+
+I will push this work in a working branch, because this is clearly not good at all.
+- So this is a dead end for now...
+- I am not even convinced that tehre is a way to do better : I am just questionning the quality of my data sample, maybe it is too fuzy for this application.
+- I should consider using a different use case with more coherent data
+
+### 2024-12-08
+
+#### What?
+
+- ok I finaly found a way to make the filtering by metadata to work with Chroma, by using the native search database capabilities
+- however this is not the good direction... we end up using classical index based search, not leveraging the LLM anymore.
+- need to find another way:
+  - better data processing to go beyond text manipulation, but also to extract real information ?
+  - connect the pieces of information like with hyperlinks ? or graph ?
+- looks like there are several RAG2.0 approach like this ! see next steps
+
+Note : the metadata experiment is available on the feature_metadata branch for now. Going back to main...
+
+#### Next Steps ?
+
+- I started to read about Knowledge Graphs and how to use them with RAG
+- I found some interesting ressources that I will try to use to build a more sophistocated RAG system
+- See [KnowledgeGraphRAG.md](KnowledgeGraphRAG.md) for more details
